@@ -26,7 +26,7 @@ function Login() {
     formData.append('username', username);
     formData.append('password', password);
 
-    fetch('/api/v1/auth/token', {
+    fetch('/api/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: formData.toString()
