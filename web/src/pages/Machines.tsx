@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
 export default function Machines() {
-  const { t } = useTranslation();
   const [machines, setMachines] = useState<any[]>([]);
 
   const fetchMachines = () => {
     const token = localStorage.getItem('token');
     fetch('/api/v1/machines', { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => res.json()).then(setMachines).catch(console.error);
+      .then(res => {
+          if (res.status === 401) { window.location.href = '/login'; return []; }
+          return res.json();
+      })
+      .then(data => { if(Array.isArray(data)) setMachines(data); })
+      .catch(console.error);
   };
 
   useEffect(() => { fetchMachines(); }, []);
