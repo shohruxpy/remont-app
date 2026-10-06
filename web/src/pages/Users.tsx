@@ -1,20 +1,70 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect } from 'react';
 
 export default function Users() {
-  const { t } = useTranslation();
-  const [users, setUsers] = React.useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
 
-  React.useEffect(() => {
+  const fetchUsers = () => {
+    const token = localStorage.getItem('token');
+    fetch('/api/v1/users', { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => res.json()).then(setUsers).catch(console.error);
+  };
+
+  useEffect(() => { fetchUsers(); }, []);
+
+  const handleAdd = () => {
+    const username = prompt('Логин:');
+    if (!username) return;
+    const full_name = prompt('Ф.И.О.:');
+    const password = prompt('Пароль:');
+    const role = prompt('Роль (ADMIN или USER):', 'USER');
+    
     const token = localStorage.getItem('token');
     fetch('/api/v1/users', {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(res => res.json()).then(setUsers).catch(console.error);
-  }, []);
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, full_name, password, role })
+    }).then(() => fetchUsers());
+  };
+
+  const handleDelete = (id: string) => {
+    if (!confirm('Вы уверены?')) return;
+    const token = localStorage.getItem('token');
+    fetch(`/api/v1/users/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+      .then(() => fetchUsers());
+  };
 
   return (
     <div className="pg-content">
-      <div className="fl"><b style={{ 'fontSize': '18px', 'marginRight': 'auto' }}>{t('t_177')}</b><button className="btn p">{t('t_178')}</button></div> <div className="c tw"><table><tr><th>{t('t_179')}</th><th>{t('t_180')}</th><th>{t('t_181')}</th><th>{t('t_182')}</th><th></th></tr> <tr><td>{t('t_183')}</td><td>{t('t_184')}</td><td><span className="tag b">{t('t_185')}</span></td><td><span className="tag g">{t('t_186')}</span></td><td><button className="btn s">{t('t_187')}</button> <button className="btn s">{t('t_188')}</button></td></tr> <tr><td>{t('t_189')}</td><td>{t('t_190')}</td><td>{t('t_191')}</td><td><span className="tag g">{t('t_192')}</span></td><td><button className="btn s">{t('t_193')}</button> <button className="btn s">{t('t_194')}</button> <button className="btn s">{t('t_195')}</button></td></tr> <tr><td>{t('t_196')}</td><td>{t('t_197')}</td><td>{t('t_198')}</td><td><span className="tag r">{t('t_199')}</span></td><td><button className="btn s">{t('t_200')}</button> <button className="btn s">{t('t_201')}</button></td></tr></table></div>
+      <div className="fl">
+        <b style={{ fontSize: '18px', marginRight: 'auto' }}>Пользователи</b>
+        <button className="btn p" onClick={handleAdd}>Добавить</button>
+      </div>
+      <div className="c tw">
+        <table>
+          <thead>
+            <tr>
+              <th>Пользователь (Ф.И.О)</th>
+              <th>Логин</th>
+              <th>Роль</th>
+              <th>Статус</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(u => (
+              <tr key={u.id}>
+                <td>{u.full_name}</td>
+                <td>{u.username}</td>
+                <td><span className="tag b">{u.role}</span></td>
+                <td><span className="tag g">{u.is_active ? 'Активен' : 'Заблокирован'}</span></td>
+                <td>
+                  <button className="btn s" onClick={() => handleDelete(u.id)}>Удалить</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

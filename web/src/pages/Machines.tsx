@@ -1,20 +1,76 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function Machines() {
   const { t } = useTranslation();
-  const [machines, setMachines] = React.useState<any[]>([]);
+  const [machines, setMachines] = useState<any[]>([]);
 
-  React.useEffect(() => {
+  const fetchMachines = () => {
+    const token = localStorage.getItem('token');
+    fetch('/api/v1/machines', { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => res.json()).then(setMachines).catch(console.error);
+  };
+
+  useEffect(() => { fetchMachines(); }, []);
+
+  const handleAdd = () => {
+    const code = prompt('Код станка (например T-01):');
+    if (!code) return;
+    const name = prompt('Краткий текст (Название):');
+    if (!name) return;
+    const sap_co_order = prompt('СО Заказ:');
+    const sap_cost_center = prompt('Ответственное МВЗ:');
+    
     const token = localStorage.getItem('token');
     fetch('/api/v1/machines', {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(res => res.json()).then(setMachines).catch(console.error);
-  }, []);
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, name, sap_co_order, sap_cost_center })
+    }).then(() => fetchMachines());
+  };
+
+  const handleDelete = (id: string) => {
+    if (!confirm('Вы уверены, что хотите удалить?')) return;
+    const token = localStorage.getItem('token');
+    fetch(`/api/v1/machines/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+      .then(() => fetchMachines());
+  };
 
   return (
     <div className="pg-content">
-      <div className="fl"><b style={{ 'fontSize': '18px', 'marginRight': 'auto' }}>{t('t_47')}</b><input className="in" placeholder="Поиск" /><button className="btn p">{t('t_48')}</button><button className="btn">{t('t_49')}</button><button className="btn">{t('t_50')}</button></div> <div className="c tw"><table><tr><th>{t('t_51')}</th><th>{t('t_52')}</th><th>{t('t_53')}</th><th>{t('t_54')}</th><th>{t('t_55')}</th><th></th></tr> <tr><td>{t('t_56')}</td><td>{t('t_57')}</td><td>{t('t_58')}</td><td>{t('t_59')}</td><td><span className="tag y">{t('t_60')}</span></td><td><button className="btn s">{t('t_61')}</button> <button className="btn s">{t('t_62')}</button></td></tr> <tr><td>{t('t_63')}</td><td>{t('t_64')}</td><td>{t('t_65')}</td><td>{t('t_66')}</td><td><span className="tag g">{t('t_67')}</span></td><td><button className="btn s">{t('t_68')}</button> <button className="btn s">{t('t_69')}</button></td></tr> <tr><td>{t('t_70')}</td><td>{t('t_71')}</td><td>{t('t_72')}</td><td>{t('t_73')}</td><td><span className="tag g">{t('t_74')}</span></td><td><button className="btn s">{t('t_75')}</button> <button className="btn s">{t('t_76')}</button></td></tr></table></div>
+      <div className="fl">
+        <b style={{ fontSize: '18px', marginRight: 'auto' }}>Станки</b>
+        <input className="in" placeholder="Поиск" />
+        <button className="btn p" onClick={handleAdd}>Добавить</button>
+      </div>
+      <div className="c tw">
+        <table>
+          <thead>
+            <tr>
+              <th>Станок (Код)</th>
+              <th>СО Заказ</th>
+              <th>Краткий текст</th>
+              <th>Ответственное МВЗ</th>
+              <th>Статус</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            {machines.map(m => (
+              <tr key={m.id}>
+                <td>{m.code}</td>
+                <td>{m.sap_co_order || ''}</td>
+                <td>{m.name}</td>
+                <td>{m.sap_cost_center || ''}</td>
+                <td><span className="tag b">{m.status}</span></td>
+                <td>
+                  <button className="btn s" onClick={() => handleDelete(m.id)}>Удалить</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
