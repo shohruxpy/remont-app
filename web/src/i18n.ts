@@ -1,0 +1,34 @@
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import localesRu from './locales_ru.json';
+
+const resources = {
+  ru: {
+    translation: {
+      ...localesRu,
+      "appTitle": "🧵 Ремонт станков",
+      "sidebar": {
+        "dashboard": "📊 Дашборд",
+        "machines": "⚙️ Станки",
+        "repairs": "🛠 Ремонты и расходы",
+        "plans": "📅 Планы и заправка",
+        "templates": "📋 Шаблоны",
+        "users": "👤 Пользователи",
+        "audit": "🧾 Журнал действий",
+        "reports": "⬇️ Отчёты (Excel)"
+      }
+    }
+  }
+};
+
+i18n
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: "ru",
+    interpolation: {
+      escapeValue: false
+    }
+  });
+
+export default i18n;

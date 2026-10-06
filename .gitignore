@@ -1,0 +1,5 @@
+app-debug.apk
+*.zip
+node_modules/
+.venv/
+__pycache__/

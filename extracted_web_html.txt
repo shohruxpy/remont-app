@@ -1,0 +1,61 @@
+
+<div class="v" id="web"><div class="web"><div class="nav" id="wn">
+<button class="on" data-t="w1">📊 Дашборд</button><button data-t="w2">⚙️ Станки</button><button data-t="w3">🛠 Ремонты и расходы</button><button data-t="w4">📅 Планы и заправка</button><button data-t="w5">📋 Шаблоны</button><button data-t="w6">👤 Пользователи</button><button data-t="w7">🧾 Журнал действий</button><button data-t="w8">⬇️ Отчёты (Excel)</button></div>
+<div class="main">
+
+<div class="pg on" id="w1"><div class="fl"><b style="font-size:18px;margin-right:auto">Дашборд</b><input class="in" value="01.09.2026"><span>–</span><input class="in" value="30.09.2026"><select class="in"><option>Все станки</option></select></div>
+<div class="kp"><div class="c mu">Ремонтов<b style="color:var(--tx)">47</b></div><div class="c mu">Расходы, сум<b style="color:var(--tx)">128 450 000</b></div><div class="c mu">Заправок в процессе<b style="color:var(--wa)">2</b></div><div class="c mu">Просрочено<b style="color:var(--er)">1</b></div></div>
+<div class="cols"><div class="c"><b>Расходы по месяцам, млн сум</b><div class="bars" style="margin-bottom:22px"><div style="height:45%"><span>май</span></div><div style="height:60%"><span>июн</span></div><div style="height:38%"><span>июл</span></div><div style="height:72%"><span>авг</span></div><div style="height:100%"><span>сен</span></div></div></div>
+<div class="c"><b>Новые и восстановленные</b><div class="st"><i style="width:72%;background:var(--pr)"></i><i style="width:28%;background:var(--ok)"></i></div><div class="row"><span><span class="tag b">Новые 72%</span></span><span class="tag g">Восстановленные 28%</span></div>
+<div style="margin-top:12px"><b>Топ-5 заменяемых деталей</b><ol style="margin:6px 0 0;padding-left:18px"><li>Челнок 40 — 36 шт.</li><li>Ремень приводной — 22 шт.</li><li>Подшипник 6204 — 18 шт.</li><li>Вал приводной — 9 шт.</li><li>Гребёнка — 7 шт.</li></ol></div></div></div>
+<div class="c tw" style="margin-top:10px"><b>Сроки заправки</b><table><tr><th>Станок</th><th>Последняя</th><th>Следующая</th><th>Осталось</th><th></th></tr>
+<tr><td>LOOM-003</td><td>10.11.2021</td><td>10.11.2026</td><td>1 мес.</td><td><span class="tag r">Срочно</span></td></tr>
+<tr><td>LOOM-014</td><td>12.03.2026</td><td>14.03.2031</td><td>4 г. 5 мес.</td><td><span class="tag y">Заправка идёт</span></td></tr>
+<tr><td>LOOM-021</td><td>05.06.2022</td><td>05.06.2027</td><td>8 мес.</td><td><span class="tag y">Скоро</span></td></tr></table></div></div>
+
+<div class="pg" id="w2"><div class="fl"><b style="font-size:18px;margin-right:auto">Станки</b><input class="in" placeholder="Поиск"><button class="btn p">+ Станок</button><button class="btn">Импорт из Excel</button><button class="btn">Печать QR (PDF)</button></div>
+<div class="c tw"><table><tr><th>Код</th><th>Название</th><th>Заказ CO</th><th>МВЗ</th><th>Статус</th><th></th></tr>
+<tr><td>LOOM-014</td><td>Ткацкий станок №14</td><td>400001014</td><td>MVZ-210</td><td><span class="tag y">Заправка</span></td><td><button class="btn s">Изменить</button> <button class="btn s">QR</button></td></tr>
+<tr><td>LOOM-015</td><td>Ткацкий станок №15</td><td>400001015</td><td>MVZ-210</td><td><span class="tag g">Работает</span></td><td><button class="btn s">Изменить</button> <button class="btn s">QR</button></td></tr>
+<tr><td>LOOM-021</td><td>Ткацкий станок №21</td><td>400001021</td><td>MVZ-110</td><td><span class="tag g">Работает</span></td><td><button class="btn s">Изменить</button> <button class="btn s">QR</button></td></tr></table></div></div>
+
+<div class="pg" id="w3"><div class="fl"><b style="font-size:18px;margin-right:auto">Ремонты и расходы</b><input class="in" value="01.09.2026"><span>–</span><input class="in" value="30.09.2026"><button class="btn p">+ Новая запись</button></div>
+<div class="cols" style="grid-template-columns:1.3fr 1fr"><div class="c tw"><table><tr><th>Дата</th><th>Станок</th><th>Тип</th><th>Автор</th><th>Сумма, сум</th></tr>
+<tr style="background:var(--prt)"><td>25.09.2026</td><td>LOOM-014</td><td>Ремонт</td><td>Иванов А.</td><td>3 280 000</td></tr>
+<tr><td>18.09.2026</td><td>LOOM-014</td><td>Заправка</td><td>Каримов Б.</td><td>41 900 000</td></tr>
+<tr><td>12.09.2026</td><td>LOOM-021</td><td>Осмотр</td><td>Иванов А.</td><td>—</td></tr></table></div>
+<div class="c"><b>Редактирование записи</b><div class="mu" style="margin-bottom:8px">25.09.2026 · LOOM-014 · Ремонт</div>
+<label class="mu">Описание</label><input class="in" value="Замена челнока">
+<table style="min-width:0"><tr><th>Материал</th><th>Состояние</th><th>Кол-во</th><th>Сумма</th></tr><tr><td>Челнок 40</td><td><span class="tag b">Новый</span></td><td>2</td><td>2 400 000</td></tr><tr><td>Вал приводной</td><td><span class="tag g">Восстан.</span></td><td>1</td><td>880 000</td></tr></table>
+<div class="row" style="margin-top:10px"><span class="mu">Цена — средняя из SAP (MAP)</span><span><button class="btn">Отмена</button> <button class="btn p">Сохранить</button></span></div></div></div></div>
+
+<div class="pg" id="w4"><div class="fl"><b style="font-size:18px;margin-right:auto">Планы и заправка</b><button class="btn p">+ План</button></div>
+<div class="c"><div class="row"><b>LOOM-014 · Заправка в процессе</b><span class="tag y">День 18 из ~30</span></div><div class="pb"><i style="width:60%;background:var(--wa)"></i></div><div class="row"><span class="mu">Начата 01.09.2026 · записей: 14 · шаблон «Стандартная заправка»</span><span><b>41 900 000 сум</b> <button class="btn s">Добавить материалы</button> <button class="btn s">Завершить</button></span></div></div>
+<div class="c tw"><table><tr><th>Дата</th><th>Станок</th><th>Тип</th><th>Описание</th><th>Статус</th><th></th></tr>
+<tr><td>15.10.2026</td><td>LOOM-014</td><td>Ремонт</td><td>Осмотр приводного вала</td><td><span class="tag y">Скоро</span></td><td><button class="btn s">Изменить</button></td></tr>
+<tr><td>10.11.2026</td><td>LOOM-003</td><td>Заправка</td><td>Плановая заправка (5 лет)</td><td><span class="tag r">Срочно</span></td><td><button class="btn s">Изменить</button></td></tr>
+<tr><td>20.12.2026</td><td>LOOM-014</td><td>Ремонт</td><td>Замена ремней</td><td><span class="tag b">План</span></td><td><button class="btn s">Изменить</button></td></tr></table></div></div>
+
+<div class="pg" id="w5"><div class="fl"><b style="font-size:18px;margin-right:auto">Шаблоны</b><button class="btn p">+ Шаблон</button></div>
+<div class="cols" style="grid-template-columns:1fr 1.6fr"><div class="c"><div class="c row" style="background:var(--prt)"><b>Стандартная заправка</b><span class="tag g">Активен</span></div><div class="c row"><b>Заправка (усиленная)</b><span class="tag g">Активен</span></div><div class="c row"><b>Замена ремней</b><span class="tag">Архив</span></div></div>
+<div class="c tw"><div class="row"><b>Стандартная заправка</b><span><button class="btn s">Копировать</button> <button class="btn s">Деактивировать</button></span></div><table style="min-width:0"><tr><th>Материал (SAP)</th><th>Состояние</th><th>Кол-во</th><th></th></tr><tr><td>Челнок 40</td><td><span class="tag b">Новый</span></td><td>12</td><td>✎ ✕</td></tr><tr><td>Ремень приводной</td><td><span class="tag b">Новый</span></td><td>8</td><td>✎ ✕</td></tr><tr><td>Вал приводной</td><td><span class="tag g">Восстан.</span></td><td>2</td><td>✎ ✕</td></tr></table><button class="btn" style="margin-top:8px">+ Строка</button> <button class="btn p" style="margin-top:8px">Сохранить</button></div></div></div>
+
+<div class="pg" id="w6"><div class="fl"><b style="font-size:18px;margin-right:auto">Пользователи</b><button class="btn p">+ Пользователь</button></div>
+<div class="c tw"><table><tr><th>Логин</th><th>ФИО</th><th>Роль</th><th>Статус</th><th></th></tr>
+<tr><td>admin</td><td>Администратор</td><td><span class="tag b">Админ</span></td><td><span class="tag g">Активен</span></td><td><button class="btn s">Изменить</button> <button class="btn s">Сбросить пароль</button></td></tr>
+<tr><td>operator1</td><td>Иванов А.</td><td>Пользователь</td><td><span class="tag g">Активен</span></td><td><button class="btn s">Изменить</button> <button class="btn s">Сбросить пароль</button> <button class="btn s">Блок</button></td></tr>
+<tr><td>operator2</td><td>Каримов Б.</td><td>Пользователь</td><td><span class="tag r">Заблокирован</span></td><td><button class="btn s">Изменить</button> <button class="btn s">Активировать</button></td></tr></table></div></div>
+
+<div class="pg" id="w7"><div class="fl"><b style="font-size:18px;margin-right:auto">Журнал действий</b><input class="in" value="01.10.2026"><input class="in" placeholder="Пользователь"></div>
+<div class="c tw"><table><tr><th>Время</th><th>Пользователь</th><th>Действие</th><th>Объект</th><th>Изменение</th></tr>
+<tr><td>02.10.2026 09:12</td><td>operator1</td><td>Создание</td><td>Ремонт LOOM-014</td><td>—</td></tr>
+<tr><td>02.10.2026 10:03</td><td>admin</td><td>Изменение</td><td>Станок LOOM-021</td><td>МВЗ: MVZ-100 → MVZ-110</td></tr>
+<tr><td>01.10.2026 16:40</td><td>admin</td><td>Блокировка</td><td>Пользователь operator2</td><td>Активен → Заблокирован</td></tr></table></div></div>
+
+<div class="pg" id="w8"><div class="fl"><b style="font-size:18px;margin-right:auto">Отчёты (Excel)</b></div>
+<div class="cols"><div class="c"><b>Расходы по станкам</b><div class="mu" style="margin:6px 0">За период: новые и восстановленные, количество и сумма</div><button class="btn p">⬇ Скачать .xlsx</button></div>
+<div class="c"><b>История ремонтов</b><div class="mu" style="margin:6px 0">Все записи по выбранным станкам</div><button class="btn p">⬇ Скачать .xlsx</button></div>
+<div class="c"><b>Сроки заправки</b><div class="mu" style="margin:6px 0">Последняя, следующая, остаток времени</div><button class="btn p">⬇ Скачать .xlsx</button></div>
+<div class="c"><b>Детали: топ замен</b><div class="mu" style="margin:6px 0">Самые часто заменяемые материалы</div><button class="btn p">⬇ Скачать .xlsx</button></div></div></div>
+
+</div></div></div>

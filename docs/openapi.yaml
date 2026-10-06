@@ -1,0 +1,1886 @@
+openapi: 3.1.0
+info:
+  title: Remont API
+  version: 1.0.0
+paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+      - auth
+      summary: Login
+      operationId: login_api_v1_auth_login_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_login_api_v1_auth_login_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/me:
+    get:
+      tags:
+      - auth
+      summary: Read Users Me
+      operationId: read_users_me_api_v1_auth_me_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/machines/:
+    get:
+      tags:
+      - machines
+      summary: Read Machines
+      operationId: read_machines_api_v1_machines__get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Search
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 25
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MachineOut'
+                title: Response Read Machines Api V1 Machines  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - machines
+      summary: Create Machine
+      operationId: create_machine_api_v1_machines__post
+      security:
+      - OAuth2PasswordBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MachineCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/machines/{code}:
+    get:
+      tags:
+      - machines
+      summary: Read Machine
+      operationId: read_machine_api_v1_machines__code__get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Code
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MachineOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/machines/import:
+    post:
+      tags:
+      - machines
+      summary: Import Machines
+      operationId: import_machines_api_v1_machines_import_post
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Dry Run
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_import_machines_api_v1_machines_import_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/machines/qr-sheet:
+    post:
+      tags:
+      - machines
+      summary: Generate Qr Sheet
+      operationId: generate_qr_sheet_api_v1_machines_qr_sheet_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QrSheetRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/machines/{code}/qr:
+    get:
+      tags:
+      - machines
+      summary: Generate Qr Single
+      operationId: generate_qr_single_api_v1_machines__code__qr_get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Code
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/users/:
+    get:
+      tags:
+      - users
+      summary: Read Users
+      operationId: read_users_api_v1_users__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/UserOut'
+                type: array
+                title: Response Read Users Api V1 Users  Get
+      security:
+      - OAuth2PasswordBearer: []
+    post:
+      tags:
+      - users
+      summary: Create User
+      operationId: create_user_api_v1_users__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/users/{id}:
+    patch:
+      tags:
+      - users
+      summary: Update User
+      operationId: update_user_api_v1_users__id__patch
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/users/{id}/reset-password:
+    post:
+      tags:
+      - users
+      summary: Reset Password
+      operationId: reset_password_api_v1_users__id__reset_password_post
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/materials/:
+    get:
+      tags:
+      - materials
+      summary: Get Materials
+      operationId: get_materials_api_v1_materials__get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Search
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          title: Page
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialOut'
+                title: Response Get Materials Api V1 Materials  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/repairs/:
+    post:
+      tags:
+      - repairs
+      summary: Create Repair
+      operationId: create_repair_api_v1_repairs__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepairCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/RepairOutAdmin'
+                - $ref: '#/components/schemas/RepairOutUser'
+                title: Response Create Repair Api V1 Repairs  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/repairs/{repair_id}:
+    get:
+      tags:
+      - repairs
+      summary: Get Repair
+      operationId: get_repair_api_v1_repairs__repair_id__get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: repair_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Repair Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/RepairOutAdmin'
+                - $ref: '#/components/schemas/RepairOutUser'
+                title: Response Get Repair Api V1 Repairs  Repair Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/zaprafka/start:
+    post:
+      tags:
+      - zaprafka
+      summary: Start Zaprafka
+      operationId: start_zaprafka_api_v1_zaprafka_start_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZaprafkaCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZaprafkaOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/zaprafka/{zaprafka_id}/finish:
+    post:
+      tags:
+      - zaprafka
+      summary: Finish Zaprafka
+      operationId: finish_zaprafka_api_v1_zaprafka__zaprafka_id__finish_post
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: zaprafka_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Zaprafka Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZaprafkaOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /health:
+    get:
+      summary: Health
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/plans/:
+    get:
+      tags:
+      - plans
+      summary: Get Plans
+      operationId: get_plans_api_v1_plans__get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: machine_code
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Machine Code
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date From
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date To
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanOut'
+                title: Response Get Plans Api V1 Plans  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - plans
+      summary: Create Plan
+      operationId: create_plan_api_v1_plans__post
+      security:
+      - OAuth2PasswordBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/plans/{plan_id}:
+    put:
+      tags:
+      - plans
+      summary: Update Plan
+      operationId: update_plan_api_v1_plans__plan_id__put
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Plan Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/plans/{plan_id}/complete:
+    post:
+      tags:
+      - plans
+      summary: Complete Plan
+      operationId: complete_plan_api_v1_plans__plan_id__complete_post
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Plan Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/templates/:
+    get:
+      tags:
+      - templates
+      summary: Get Templates
+      operationId: get_templates_api_v1_templates__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TemplateOut'
+                type: array
+                title: Response Get Templates Api V1 Templates  Get
+      security:
+      - OAuth2PasswordBearer: []
+    post:
+      tags:
+      - templates
+      summary: Create Template
+      operationId: create_template_api_v1_templates__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/templates/{template_id}:
+    get:
+      tags:
+      - templates
+      summary: Get Template
+      operationId: get_template_api_v1_templates__template_id__get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Template Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - templates
+      summary: Patch Template
+      operationId: patch_template_api_v1_templates__template_id__patch
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Template Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplatePatch'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/templates/{template_id}/copy:
+    post:
+      tags:
+      - templates
+      summary: Copy Template
+      operationId: copy_template_api_v1_templates__template_id__copy_post
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Template Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/analytics/history:
+    get:
+      tags:
+      - analytics
+      summary: Get Analytics History
+      operationId: get_analytics_history_api_v1_analytics_history_get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: machine_code
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Machine Code
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date From
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date To
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsHistoryOut'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/analytics/dashboard:
+    get:
+      tags:
+      - analytics
+      summary: Get Analytics Dashboard
+      operationId: get_analytics_dashboard_api_v1_analytics_dashboard_get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: machine_code
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Machine Code
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date From
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date To
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/audit-log/:
+    get:
+      tags:
+      - audit
+      summary: Get Audit Log
+      operationId: get_audit_log_api_v1_audit_log__get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date
+      - name: username
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Username
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 25
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/reports/{report_type}.xlsx:
+    get:
+      tags:
+      - reports
+      summary: Get Excel Report
+      operationId: get_excel_report_api_v1_reports__report_type__xlsx_get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: report_type
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Report Type
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date From
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date To
+      - name: machine_code
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Machine Code
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AnalyticsHistoryOut:
+      properties:
+        repairs_count:
+          type: integer
+          title: Repairs Count
+        new_parts_qty:
+          type: number
+          title: New Parts Qty
+        new_parts_amount:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: New Parts Amount
+        refurbished_parts_qty:
+          type: number
+          title: Refurbished Parts Qty
+        top_parts:
+          items:
+            type: object
+          type: array
+          title: Top Parts
+        refurbishment_share_pct:
+          type: number
+          title: Refurbishment Share Pct
+        zaprafka_expenses:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Zaprafka Expenses
+      type: object
+      required:
+      - repairs_count
+      - new_parts_qty
+      - new_parts_amount
+      - refurbished_parts_qty
+      - top_parts
+      - refurbishment_share_pct
+      - zaprafka_expenses
+      title: AnalyticsHistoryOut
+    Body_import_machines_api_v1_machines_import_post:
+      properties:
+        file:
+          type: string
+          contentMediaType: application/octet-stream
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_import_machines_api_v1_machines_import_post
+    Body_login_api_v1_auth_login_post:
+      properties:
+        grant_type:
+          anyOf:
+          - type: string
+            pattern: ^password$
+          - type: 'null'
+          title: Grant Type
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          format: password
+          title: Password
+        scope:
+          type: string
+          title: Scope
+          default: ''
+        client_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client Id
+        client_secret:
+          anyOf:
+          - type: string
+          - type: 'null'
+          format: password
+          title: Client Secret
+      type: object
+      required:
+      - username
+      - password
+      title: Body_login_api_v1_auth_login_post
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    MachineCreate:
+      properties:
+        code:
+          type: string
+          title: Code
+        name:
+          type: string
+          title: Name
+        model:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model
+        serial_no:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Serial No
+        location:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Location
+        sap_co_order:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sap Co Order
+        sap_cost_center:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sap Cost Center
+        zaprafka_interval_months:
+          type: integer
+          title: Zaprafka Interval Months
+          default: 60
+      type: object
+      required:
+      - code
+      - name
+      title: MachineCreate
+    MachineOut:
+      properties:
+        code:
+          type: string
+          title: Code
+        name:
+          type: string
+          title: Name
+        model:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model
+        serial_no:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Serial No
+        location:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Location
+        sap_co_order:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sap Co Order
+        sap_cost_center:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sap Cost Center
+        zaprafka_interval_months:
+          type: integer
+          title: Zaprafka Interval Months
+          default: 60
+        id:
+          type: string
+          format: uuid
+          title: Id
+        status:
+          type: string
+          title: Status
+        last_zaprafka_end:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Zaprafka End
+      type: object
+      required:
+      - code
+      - name
+      - id
+      - status
+      title: MachineOut
+    MaterialOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        code:
+          type: string
+          title: Code
+        name:
+          type: string
+          title: Name
+        unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unit
+        map_price:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Map Price
+      type: object
+      required:
+      - id
+      - code
+      - name
+      title: MaterialOut
+    PlanCreate:
+      properties:
+        machine_id:
+          type: string
+          format: uuid
+          title: Machine Id
+        type:
+          type: string
+          title: Type
+        plan_date:
+          type: string
+          format: date-time
+          title: Plan Date
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      type: object
+      required:
+      - machine_id
+      - type
+      - plan_date
+      title: PlanCreate
+    PlanOut:
+      properties:
+        machine_id:
+          type: string
+          format: uuid
+          title: Machine Id
+        type:
+          type: string
+          title: Type
+        plan_date:
+          type: string
+          format: date-time
+          title: Plan Date
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          type: string
+          format: uuid
+          title: Id
+        status:
+          type: string
+          title: Status
+        done_repair_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Done Repair Id
+      type: object
+      required:
+      - machine_id
+      - type
+      - plan_date
+      - id
+      - status
+      title: PlanOut
+    QrSheetRequest:
+      properties:
+        codes:
+          items:
+            type: string
+          type: array
+          title: Codes
+      type: object
+      required:
+      - codes
+      title: QrSheetRequest
+    RepairCreate:
+      properties:
+        machine_id:
+          type: string
+          format: uuid
+          title: Machine Id
+        repair_date:
+          type: string
+          format: date-time
+          title: Repair Date
+        type:
+          type: string
+          title: Type
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        crew:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Crew
+        zaprafka_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Zaprafka Id
+        plan_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Plan Id
+        items:
+          items:
+            $ref: '#/components/schemas/RepairItemCreate'
+          type: array
+          title: Items
+      type: object
+      required:
+      - machine_id
+      - repair_date
+      - type
+      - items
+      title: RepairCreate
+    RepairItemCreate:
+      properties:
+        item_no:
+          type: integer
+          title: Item No
+        material_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Material Id
+        free_text_material:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Free Text Material
+        condition:
+          type: string
+          title: Condition
+        qty:
+          anyOf:
+          - type: number
+          - type: string
+          title: Qty
+        unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unit
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+      type: object
+      required:
+      - item_no
+      - condition
+      - qty
+      title: RepairItemCreate
+    RepairItemOutAdmin:
+      properties:
+        item_no:
+          type: integer
+          title: Item No
+        material_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Material Id
+        free_text_material:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Free Text Material
+        condition:
+          type: string
+          title: Condition
+        qty:
+          type: string
+          title: Qty
+        unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unit
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+        id:
+          type: string
+          format: uuid
+          title: Id
+        unit_price:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unit Price
+        amount:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Amount
+      type: object
+      required:
+      - item_no
+      - condition
+      - qty
+      - id
+      title: RepairItemOutAdmin
+    RepairItemOutUser:
+      properties:
+        item_no:
+          type: integer
+          title: Item No
+        material_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Material Id
+        free_text_material:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Free Text Material
+        condition:
+          type: string
+          title: Condition
+        qty:
+          type: string
+          title: Qty
+        unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unit
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+        id:
+          type: string
+          format: uuid
+          title: Id
+      type: object
+      required:
+      - item_no
+      - condition
+      - qty
+      - id
+      title: RepairItemOutUser
+    RepairOutAdmin:
+      properties:
+        machine_id:
+          type: string
+          format: uuid
+          title: Machine Id
+        repair_date:
+          type: string
+          format: date-time
+          title: Repair Date
+        type:
+          type: string
+          title: Type
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        crew:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Crew
+        zaprafka_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Zaprafka Id
+        plan_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Plan Id
+        id:
+          type: string
+          format: uuid
+          title: Id
+        status:
+          type: string
+          title: Status
+        version:
+          type: integer
+          title: Version
+        items:
+          items:
+            $ref: '#/components/schemas/RepairItemOutAdmin'
+          type: array
+          title: Items
+          default: []
+      type: object
+      required:
+      - machine_id
+      - repair_date
+      - type
+      - id
+      - status
+      - version
+      title: RepairOutAdmin
+    RepairOutUser:
+      properties:
+        machine_id:
+          type: string
+          format: uuid
+          title: Machine Id
+        repair_date:
+          type: string
+          format: date-time
+          title: Repair Date
+        type:
+          type: string
+          title: Type
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        crew:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Crew
+        zaprafka_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Zaprafka Id
+        plan_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Plan Id
+        id:
+          type: string
+          format: uuid
+          title: Id
+        status:
+          type: string
+          title: Status
+        version:
+          type: integer
+          title: Version
+        items:
+          items:
+            $ref: '#/components/schemas/RepairItemOutUser'
+          type: array
+          title: Items
+          default: []
+      type: object
+      required:
+      - machine_id
+      - repair_date
+      - type
+      - id
+      - status
+      - version
+      title: RepairOutUser
+    TemplateCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        type:
+          type: string
+          title: Type
+        items:
+          items:
+            $ref: '#/components/schemas/TemplateItemCreate'
+          type: array
+          title: Items
+          default: []
+      type: object
+      required:
+      - name
+      - type
+      title: TemplateCreate
+    TemplateItemCreate:
+      properties:
+        material_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Material Id
+        condition:
+          type: string
+          title: Condition
+        qty:
+          anyOf:
+          - type: number
+          - type: string
+          title: Qty
+        unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unit
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+      type: object
+      required:
+      - condition
+      - qty
+      title: TemplateItemCreate
+    TemplateOut:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        type:
+          type: string
+          title: Type
+        is_active:
+          type: boolean
+          title: Is Active
+      type: object
+      required:
+      - id
+      - name
+      - type
+      - is_active
+      title: TemplateOut
+    TemplatePatch:
+      properties:
+        active:
+          type: boolean
+          title: Active
+      type: object
+      required:
+      - active
+      title: TemplatePatch
+    Token:
+      properties:
+        access_token:
+          type: string
+          title: Access Token
+        refresh_token:
+          type: string
+          title: Refresh Token
+        token_type:
+          type: string
+          title: Token Type
+        user:
+          $ref: '#/components/schemas/UserOut'
+      type: object
+      required:
+      - access_token
+      - refresh_token
+      - token_type
+      - user
+      title: Token
+    UserCreate:
+      properties:
+        username:
+          type: string
+          title: Username
+        full_name:
+          type: string
+          title: Full Name
+        role:
+          type: string
+          title: Role
+        is_active:
+          type: boolean
+          title: Is Active
+          default: true
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+      - username
+      - full_name
+      - role
+      - password
+      title: UserCreate
+    UserOut:
+      properties:
+        username:
+          type: string
+          title: Username
+        full_name:
+          type: string
+          title: Full Name
+        role:
+          type: string
+          title: Role
+        is_active:
+          type: boolean
+          title: Is Active
+          default: true
+        id:
+          type: string
+          format: uuid
+          title: Id
+      type: object
+      required:
+      - username
+      - full_name
+      - role
+      - id
+      title: UserOut
+    UserUpdate:
+      properties:
+        active:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Active
+        role:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Role
+        full_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Full Name
+      type: object
+      title: UserUpdate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ZaprafkaCreate:
+      properties:
+        machine_id:
+          type: string
+          format: uuid
+          title: Machine Id
+        start_date:
+          type: string
+          format: date-time
+          title: Start Date
+        template_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Template Id
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+      type: object
+      required:
+      - machine_id
+      - start_date
+      title: ZaprafkaCreate
+    ZaprafkaOut:
+      properties:
+        machine_id:
+          type: string
+          format: uuid
+          title: Machine Id
+        start_date:
+          type: string
+          format: date-time
+          title: Start Date
+        template_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Template Id
+        note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Note
+        id:
+          type: string
+          format: uuid
+          title: Id
+        end_date:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: End Date
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+      - machine_id
+      - start_date
+      - id
+      - status
+      title: ZaprafkaOut
+  securitySchemes:
+    OAuth2PasswordBearer:
+      type: oauth2
+      flows:
+        password:
+          scopes: {}
+          tokenUrl: api/v1/auth/login
