@@ -140,8 +140,15 @@ export default function Machines() {
           body: JSON.stringify(payload),
         });
         if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.detail || "Stanokni o'zgartirishda xatolik yuz berdi");
+          let msg = "Stanokni o'zgartirishda xatolik yuz berdi";
+          try {
+            const err = await res.json();
+            msg = err.detail || msg;
+          } catch {
+            const text = await res.text();
+            if (text) msg = text;
+          }
+          throw new Error(msg);
         }
       } else {
         // CREATE (POST)
@@ -154,8 +161,15 @@ export default function Machines() {
           body: JSON.stringify(payload),
         });
         if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.detail || "Stanokni yaratishda xatolik yuz berdi");
+          let msg = "Stanokni yaratishda xatolik yuz berdi";
+          try {
+            const err = await res.json();
+            msg = err.detail || msg;
+          } catch {
+            const text = await res.text();
+            if (text) msg = text;
+          }
+          throw new Error(msg);
         }
       }
 

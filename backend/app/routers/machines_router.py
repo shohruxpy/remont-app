@@ -47,7 +47,8 @@ async def create_machine(machine: MachineCreate, db: AsyncSession = Depends(get_
     db.add(db_machine)
     await db.flush()
     
-    log = AuditLog(user_id=current_user.id, action="CREATE", entity="MACHINE", entity_id=db_machine.id, after=m_dict)
+    audit_dict = machine.model_dump(mode="json")
+    log = AuditLog(user_id=current_user.id, action="CREATE", entity="MACHINE", entity_id=db_machine.id, after=audit_dict)
     db.add(log)
     await db.commit()
     await db.refresh(db_machine)
@@ -66,7 +67,8 @@ async def update_machine(machine_id: uuid.UUID, machine_data: MachineUpdate, db:
     for field, val in update_dict.items():
         setattr(machine, field, val)
         
-    log = AuditLog(user_id=current_user.id, action="UPDATE", entity="MACHINE", entity_id=machine.id, after=update_dict)
+    audit_dict = machine_data.model_dump(mode="json", exclude_unset=True)
+    log = AuditLog(user_id=current_user.id, action="UPDATE", entity="MACHINE", entity_id=machine.id, after=audit_dict)
     db.add(log)
     await db.commit()
     await db.refresh(machine)
