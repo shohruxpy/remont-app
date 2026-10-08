@@ -98,7 +98,7 @@ export default function Repairs() {
     try {
       const payload = {
         machine_id: formData.machine_id,
-        repair_date: new Date(formData.repair_date).toISOString(),
+        repair_date: `${formData.repair_date}T00:00:00`,
         type: formData.type,
         title: formData.title || formData.type,
         description: formData.description,
@@ -116,8 +116,15 @@ export default function Repairs() {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || 'Ошибка при сохранении ремонта');
+        let errMsg = 'Ошибка при сохранении ремонта';
+        try {
+          const err = await res.json();
+          errMsg = err.detail || errMsg;
+        } catch {
+          const text = await res.text();
+          errMsg = text || errMsg;
+        }
+        throw new Error(errMsg);
       }
 
       handleCloseModal();

@@ -36,10 +36,11 @@ async def create_plan(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    p_date = plan.plan_date.replace(tzinfo=None) if plan.plan_date and plan.plan_date.tzinfo else plan.plan_date
     db_plan = Plan(
         machine_id=plan.machine_id,
         type=plan.type,
-        plan_date=plan.plan_date,
+        plan_date=p_date,
         description=plan.description,
         created_by=current_user.id
     )
@@ -61,7 +62,7 @@ async def update_plan(
         raise HTTPException(status_code=404, detail="Not found")
     
     plan.type = plan_data.type
-    plan.plan_date = plan_data.plan_date
+    plan.plan_date = plan_data.plan_date.replace(tzinfo=None) if plan_data.plan_date and plan_data.plan_date.tzinfo else plan_data.plan_date
     plan.description = plan_data.description
     plan.version += 1
     plan.updated_by = current_user.id

@@ -22,9 +22,10 @@ async def list_repairs(db: AsyncSession = Depends(get_db), current_user: User = 
 
 @router.post("/", response_model=Union[RepairOutAdmin, RepairOutUser])
 async def create_repair(repair: RepairCreate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    r_date = repair.repair_date.replace(tzinfo=None) if repair.repair_date and repair.repair_date.tzinfo else repair.repair_date
     db_repair = Repair(
         machine_id=repair.machine_id,
-        repair_date=repair.repair_date,
+        repair_date=r_date,
         type=repair.type,
         title=repair.title,
         description=repair.description,

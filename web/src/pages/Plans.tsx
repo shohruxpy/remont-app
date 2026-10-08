@@ -91,7 +91,7 @@ export default function Plans() {
     try {
       const payload = {
         machine_id: formData.machine_id,
-        plan_date: new Date(formData.plan_date).toISOString(),
+        plan_date: `${formData.plan_date}T00:00:00`,
         type: formData.type,
         description: formData.description,
       };
@@ -106,8 +106,15 @@ export default function Plans() {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || 'Ошибка при создании плана');
+        let errMsg = 'Ошибка при создании плана';
+        try {
+          const err = await res.json();
+          errMsg = err.detail || errMsg;
+        } catch {
+          const text = await res.text();
+          errMsg = text || errMsg;
+        }
+        throw new Error(errMsg);
       }
 
       handleCloseModal();
