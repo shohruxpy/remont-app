@@ -8,7 +8,7 @@ import io
 
 from ..database import get_db
 from ..models import Machine, AuditLog, User
-from ..schemas import MachineOut, MachineCreate
+from ..schemas import MachineOut, MachineCreate, MachineUpdate
 from ..auth import get_current_user, admin_required
 
 router = APIRouter()
@@ -49,6 +49,37 @@ async def create_machine(machine: MachineCreate, db: AsyncSession = Depends(get_
     await db.commit()
     await db.refresh(db_machine)
     return db_machine
+
+@router.put("/{machine_id}", response_model=MachineOut)
+async def update_machine(machine_id: uuid.UUID, machine_data: MachineUpdate, db: AsyncSession = Depends(get_db), current_user: User = Depends(admin_required)):
+    result = await db.execute(select(Machine).where(Machine.id == machine_id))
+    machine = result.scalars().first()
+    if not machine:
+        raise HTTPException(status_code=404, detail="Machine not found")
+        
+    update_dict = machine_data.model_dump(exclude_unset=True)
+    for field, val in update_dict.items():
+        setattr(machine, field, val)
+        
+    log = AuditLog(user_id=current_user.id, action="UPDATE", entity="MACHINE", entity_id=machine.id, after=update_dict)
+    db.add(log)
+    await db.commit()
+    await db.refresh(machine)
+    return machine
+
+@router.delete("/{machine_id}")
+async def delete_machine(machine_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(admin_required)):
+    result = await db.execute(select(Machine).where(Machine.id == machine_id))
+    machine = result.scalars().first()
+    if not machine:
+        raise HTTPException(status_code=404, detail="Machine not found")
+        
+    machine.is_archived = True
+    log = AuditLog(user_id=current_user.id, action="DELETE", entity="MACHINE", entity_id=machine.id)
+    db.add(log)
+    await db.commit()
+    return {"status": "success", "message": "Machine deleted"}
+
 
 @router.post("/import")
 async def import_machines(dry_run: bool = False, file: UploadFile = File(...), db: AsyncSession = Depends(get_db), current_user: User = Depends(admin_required)):

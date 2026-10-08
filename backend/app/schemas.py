@@ -44,3 +44,14 @@ class MachineOut(MachineBase):
     
     class Config:
         from_attributes = True
+
+class MachineUpdate(BaseModel):
+    code: Optional[str] = None
+    name: Optional[str] = None
+    model: Optional[str] = None
+    serial_no: Optional[str] = None
+    location: Optional[str] = None
+    sap_co_order: Optional[str] = None
+    sap_cost_center: Optional[str] = None
+    status: Optional[str] = None
+
