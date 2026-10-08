@@ -6,7 +6,18 @@ export default function Templates() {
   const fetchTemplates = () => {
     const token = localStorage.getItem('token');
     fetch('/api/v1/templates', { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => res.json()).then(setTemplates).catch(console.error);
+      .then(res => {
+        if (!res.ok) return [];
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) setTemplates(data);
+        else setTemplates([]);
+      })
+      .catch(err => {
+        console.error(err);
+        setTemplates([]);
+      });
   };
 
   useEffect(() => { fetchTemplates(); }, []);
@@ -33,7 +44,7 @@ export default function Templates() {
 
   return (
     <div className="pg-content">
-      <div className="fl">
+      <div className="fl" style={{ marginBottom: '16px' }}>
         <b style={{ fontSize: '18px', marginRight: 'auto' }}>Шаблоны</b>
         <button className="btn p" onClick={handleAdd}>Добавить</button>
       </div>
@@ -47,15 +58,23 @@ export default function Templates() {
             </tr>
           </thead>
           <tbody>
-            {templates.map(t => (
-              <tr key={t.id}>
-                <td>{t.name}</td>
-                <td>{t.type}</td>
-                <td>
-                  <button className="btn s" onClick={() => handleDelete(t.id)}>Удалить</button>
+            {templates.length === 0 ? (
+              <tr>
+                <td colSpan={3} style={{ textAlign: 'center', color: '#999', padding: '24px' }}>
+                  Шаблонов пока нет
                 </td>
               </tr>
-            ))}
+            ) : (
+              templates.map(t => (
+                <tr key={t.id}>
+                  <td>{t.name}</td>
+                  <td>{t.type}</td>
+                  <td>
+                    <button className="btn s" onClick={() => handleDelete(t.id)}>Удалить</button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

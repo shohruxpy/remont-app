@@ -12,6 +12,14 @@ from ..auth import get_current_user
 
 router = APIRouter()
 
+@router.get("/", response_model=List[Union[RepairOutAdmin, RepairOutUser]])
+async def list_repairs(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    res = await db.execute(select(Repair).options(selectinload(Repair.items)).order_by(Repair.repair_date.desc()))
+    repairs = res.scalars().all()
+    if current_user.role == "ADMIN":
+        return [RepairOutAdmin.model_validate(r) for r in repairs]
+    return [RepairOutUser.model_validate(r) for r in repairs]
+
 @router.post("/", response_model=Union[RepairOutAdmin, RepairOutUser])
 async def create_repair(repair: RepairCreate, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     db_repair = Repair(

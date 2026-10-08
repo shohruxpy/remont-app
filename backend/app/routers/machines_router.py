@@ -14,14 +14,15 @@ from ..auth import get_current_user, admin_required
 router = APIRouter()
 
 @router.get("/", response_model=List[MachineOut])
-async def read_machines(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user), search: Optional[str] = None, status: Optional[str] = None, page: int = 1, page_size: int = 25):
-    query = select(Machine).where(Machine.is_archived == False)
+async def read_machines(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user), search: Optional[str] = None, status: Optional[str] = None, page: int = 1, page_size: Optional[int] = 100):
+    query = select(Machine).where(Machine.is_archived == False).order_by(Machine.code.asc())
     if search:
         query = query.where(Machine.code.ilike(f"%{search}%") | Machine.name.ilike(f"%{search}%"))
     if status:
         query = query.where(Machine.status == status)
     
-    query = query.offset((page - 1) * page_size).limit(page_size)
+    if page_size and page_size > 0:
+        query = query.offset((page - 1) * page_size).limit(page_size)
     result = await db.execute(query)
     return result.scalars().all()
 
