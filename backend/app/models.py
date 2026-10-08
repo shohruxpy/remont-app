@@ -144,6 +144,7 @@ class Material(BaseMixin, Base):
     code = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
     unit = Column(String)
+    stock_qty = Column(Numeric(14, 3), default=50.0)
     map_price = Column(Numeric(18, 2), nullable=True)
     price_updated_at = Column(DateTime(timezone=True))
     source = Column(String, default=MaterialSource.EXCEL.value)

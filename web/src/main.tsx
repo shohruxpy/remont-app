@@ -10,7 +10,7 @@ import Machines from './pages/Machines';
 import Repairs from './pages/Repairs';
 import Plans from './pages/Plans';
 import Users from './pages/Users';
-import Audit from './pages/Audit';
+import Warehouse from './pages/Warehouse';
 import Reports from './pages/Reports';
 
 function Login() {
@@ -176,7 +176,7 @@ function App() {
           <Route path="repairs" element={<Repairs />} />
           <Route path="plans" element={<Plans />} />
           <Route path="users" element={<Users />} />
-          <Route path="audit" element={<Audit />} />
+          <Route path="warehouse" element={<Warehouse />} />
           <Route path="reports" element={<Reports />} />
         </Route>
       </Routes>

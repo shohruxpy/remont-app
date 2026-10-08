@@ -105,8 +105,8 @@ export default function Layout() {
             <NavItem to="/machines" label={t('sidebar.machines', 'Станки')} />
             <NavItem to="/repairs" label={t('sidebar.repairs', 'Ремонты и расходы')} />
             <NavItem to="/plans" label={t('sidebar.plans', 'Планы и заправка')} />
+            <NavItem to="/warehouse" label="Склад и материалы" />
             <NavItem to="/users" label={t('sidebar.users', 'Пользователи')} />
-            <NavItem to="/audit" label={t('sidebar.audit', 'Журнал действий')} />
             <NavItem to="/reports" label={t('sidebar.reports', 'Отчёты (Excel)')} />
           </nav>
 

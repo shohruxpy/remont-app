@@ -11,6 +11,7 @@ class MaterialOut(BaseModel):
     name: str
     unit: Optional[str] = None
     map_price: Optional[Decimal] = None
+    stock_qty: Optional[Decimal] = None
     
     model_config = ConfigDict(from_attributes=True)
 
