@@ -33,6 +33,7 @@ class MachineBase(BaseModel):
     sap_co_order: Optional[str] = None
     sap_cost_center: Optional[str] = None
     zaprafka_interval_months: int = 60
+    last_zaprafka_end: Optional[datetime] = None
 
 class MachineCreate(MachineBase):
     pass
@@ -40,7 +41,6 @@ class MachineCreate(MachineBase):
 class MachineOut(MachineBase):
     id: uuid.UUID
     status: str
-    last_zaprafka_end: Optional[datetime] = None
     
     class Config:
         from_attributes = True
@@ -53,5 +53,8 @@ class MachineUpdate(BaseModel):
     location: Optional[str] = None
     sap_co_order: Optional[str] = None
     sap_cost_center: Optional[str] = None
+    zaprafka_interval_months: Optional[int] = None
+    last_zaprafka_end: Optional[datetime] = None
     status: Optional[str] = None
+
 

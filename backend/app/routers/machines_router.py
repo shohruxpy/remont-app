@@ -40,11 +40,14 @@ async def create_machine(machine: MachineCreate, db: AsyncSession = Depends(get_
     if result.scalars().first():
         raise HTTPException(status_code=400, detail="Machine with this code already exists")
         
-    db_machine = Machine(**machine.model_dump(), created_by=current_user.id)
+    m_dict = machine.model_dump()
+    if m_dict.get("last_zaprafka_end") and hasattr(m_dict["last_zaprafka_end"], "tzinfo") and m_dict["last_zaprafka_end"].tzinfo:
+        m_dict["last_zaprafka_end"] = m_dict["last_zaprafka_end"].replace(tzinfo=None)
+    db_machine = Machine(**m_dict, created_by=current_user.id)
     db.add(db_machine)
     await db.flush()
     
-    log = AuditLog(user_id=current_user.id, action="CREATE", entity="MACHINE", entity_id=db_machine.id, after=machine.model_dump())
+    log = AuditLog(user_id=current_user.id, action="CREATE", entity="MACHINE", entity_id=db_machine.id, after=m_dict)
     db.add(log)
     await db.commit()
     await db.refresh(db_machine)
@@ -58,6 +61,8 @@ async def update_machine(machine_id: uuid.UUID, machine_data: MachineUpdate, db:
         raise HTTPException(status_code=404, detail="Machine not found")
         
     update_dict = machine_data.model_dump(exclude_unset=True)
+    if update_dict.get("last_zaprafka_end") and hasattr(update_dict["last_zaprafka_end"], "tzinfo") and update_dict["last_zaprafka_end"].tzinfo:
+        update_dict["last_zaprafka_end"] = update_dict["last_zaprafka_end"].replace(tzinfo=None)
     for field, val in update_dict.items():
         setattr(machine, field, val)
         

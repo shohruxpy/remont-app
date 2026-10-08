@@ -10,6 +10,8 @@ interface MachineItem {
   location?: string | null;
   serial_no?: string | null;
   model?: string | null;
+  last_zaprafka_end?: string | null;
+  zaprafka_interval_months?: number;
 }
 
 export default function Machines() {
@@ -27,6 +29,8 @@ export default function Machines() {
     sap_cost_center: '',
     status: 'ACTIVE',
     location: '',
+    last_zaprafka_end: '',
+    zaprafka_interval_years: 5,
   });
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -67,6 +71,8 @@ export default function Machines() {
       sap_cost_center: '',
       status: 'ACTIVE',
       location: '',
+      last_zaprafka_end: '',
+      zaprafka_interval_years: 5,
     });
     setFormError('');
     setIsModalOpen(true);
@@ -75,6 +81,12 @@ export default function Machines() {
   // Open modal for Edit
   const handleOpenEdit = (m: MachineItem) => {
     setEditingMachine(m);
+    const years = m.zaprafka_interval_months ? Math.round(m.zaprafka_interval_months / 12) : 5;
+    let zapDate = '';
+    if (m.last_zaprafka_end) {
+      zapDate = m.last_zaprafka_end.split('T')[0];
+    }
+
     setFormData({
       code: m.code || '',
       name: m.name || '',
@@ -82,6 +94,8 @@ export default function Machines() {
       sap_cost_center: m.sap_cost_center || '',
       status: m.status || 'ACTIVE',
       location: m.location || '',
+      last_zaprafka_end: zapDate,
+      zaprafka_interval_years: years,
     });
     setFormError('');
     setIsModalOpen(true);
@@ -103,6 +117,17 @@ export default function Machines() {
     setFormError('');
     const token = localStorage.getItem('token');
 
+    const payload: any = {
+      code: formData.code.trim(),
+      name: formData.name.trim(),
+      sap_co_order: formData.sap_co_order.trim() || null,
+      sap_cost_center: formData.sap_cost_center.trim() || null,
+      status: formData.status,
+      location: formData.location.trim() || null,
+      zaprafka_interval_months: (formData.zaprafka_interval_years || 5) * 12,
+      last_zaprafka_end: formData.last_zaprafka_end ? `${formData.last_zaprafka_end}T00:00:00` : null,
+    };
+
     try {
       if (editingMachine) {
         // UPDATE (PUT)
@@ -112,7 +137,7 @@ export default function Machines() {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
         if (!res.ok) {
           const err = await res.json();
@@ -126,7 +151,7 @@ export default function Machines() {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
         if (!res.ok) {
           const err = await res.json();
@@ -222,7 +247,7 @@ export default function Machines() {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: '#1d4ed8',
+              backgroundColor: '#714B67',
               color: '#ffffff',
               border: 'none',
               padding: '9px 18px',
@@ -230,11 +255,11 @@ export default function Machines() {
               fontSize: '14px',
               fontWeight: 600,
               cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(29, 78, 216, 0.25)',
+              boxShadow: '0 2px 4px rgba(113, 75, 103, 0.25)',
               transition: 'background-color 0.2s'
             }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#1e40af')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#1d4ed8')}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#5c3d54')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#714B67')}
           >
             <span style={{ fontSize: '18px', lineHeight: 1 }}>+</span> Добавить станок
           </button>
@@ -256,6 +281,8 @@ export default function Machines() {
               <th style={{ padding: '14px 20px', fontWeight: 600 }}>СО Заказ</th>
               <th style={{ padding: '14px 20px', fontWeight: 600 }}>Краткий текст</th>
               <th style={{ padding: '14px 20px', fontWeight: 600 }}>Ответственное МВЗ</th>
+              <th style={{ padding: '14px 20px', fontWeight: 600 }}>Посл. заправка</th>
+              <th style={{ padding: '14px 20px', fontWeight: 600 }}>Интервал</th>
               <th style={{ padding: '14px 20px', fontWeight: 600 }}>Статус</th>
               <th style={{ padding: '14px 20px', fontWeight: 600, textAlign: 'right' }}>Действия</th>
             </tr>
@@ -263,115 +290,129 @@ export default function Machines() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
                   Yuklanmoqda...
                 </td>
               </tr>
             ) : machines.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
-                  Stanoklar topilmadi
+                <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
+                  Станки не найдены
                 </td>
               </tr>
             ) : (
-              machines.map((m, idx) => (
-                <tr 
-                  key={m.id}
-                  style={{ 
-                    borderBottom: idx === machines.length - 1 ? 'none' : '1px solid #f1f5f9',
-                    transition: 'background-color 0.15s'
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#f8fafc')}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#ffffff')}
-                >
-                  <td style={{ padding: '14px 20px', fontWeight: 600, color: '#0f172a' }}>
-                    {m.code}
-                  </td>
-                  <td style={{ padding: '14px 20px', color: '#475569' }}>
-                    {m.sap_co_order || '-'}
-                  </td>
-                  <td style={{ padding: '14px 20px', color: '#334155' }}>
-                    {m.name}
-                  </td>
-                  <td style={{ padding: '14px 20px', color: '#475569' }}>
-                    {m.sap_cost_center || '-'}
-                  </td>
-                  <td style={{ padding: '14px 20px' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '3px 10px',
-                      borderRadius: '12px',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      backgroundColor: m.status === 'ACTIVE' ? '#dcfce7' : m.status === 'MAINTENANCE' ? '#fef3c7' : '#f1f5f9',
-                      color: m.status === 'ACTIVE' ? '#15803d' : m.status === 'MAINTENANCE' ? '#b45309' : '#475569'
-                    }}>
-                      {m.status || 'ACTIVE'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '14px 20px', textAlign: 'right' }}>
-                    <div style={{ display: 'inline-flex', gap: '8px' }}>
-                      <button
-                        onClick={() => handleOpenEdit(m)}
-                        title="Tahrirlash"
-                        style={{
-                          backgroundColor: '#f1f5f9',
-                          color: '#0f172a',
-                          border: '1px solid #cbd5e1',
-                          padding: '6px 12px',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          fontWeight: 500,
-                          cursor: 'pointer',
-                          transition: 'all 0.15s'
-                        }}
-                        onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#e2e8f0'; }}
-                        onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#f1f5f9'; }}
-                      >
-                        Изменить
-                      </button>
-                      <button
-                        onClick={() => handlePrintQR(m.code)}
-                        title="QR Kod"
-                        style={{
-                          backgroundColor: '#f1f5f9',
-                          color: '#0f172a',
-                          border: '1px solid #cbd5e1',
-                          padding: '6px 10px',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          fontWeight: 500,
-                          cursor: 'pointer',
-                          transition: 'all 0.15s'
-                        }}
-                        onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#e2e8f0'; }}
-                        onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#f1f5f9'; }}
-                      >
-                        QR
-                      </button>
-                      <button
-                        onClick={() => handleDelete(m.id, m.code)}
-                        title="O'chirish"
-                        style={{
-                          backgroundColor: '#fff1f2',
-                          color: '#e11d48',
-                          border: '1px solid #fecdd3',
-                          padding: '6px 12px',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          fontWeight: 500,
-                          cursor: 'pointer',
-                          transition: 'all 0.15s'
-                        }}
-                        onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#ffe4e6'; }}
-                        onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#fff1f2'; }}
-                      >
-                        Удалить
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+              machines.map((m, idx) => {
+                const zapDate = m.last_zaprafka_end ? new Date(m.last_zaprafka_end).toLocaleDateString() : 'Не указана';
+                const intervalYears = m.zaprafka_interval_months ? Math.round(m.zaprafka_interval_months / 12) : 5;
+                const isZaprafka = m.status === 'ZAPRAFKA';
+
+                return (
+                  <tr 
+                    key={m.id}
+                    style={{ 
+                      borderBottom: idx === machines.length - 1 ? 'none' : '1px solid #f1f5f9',
+                      transition: 'background-color 0.15s',
+                      cursor: 'pointer'
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#f8fafc')}
+                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#ffffff')}
+                    onClick={() => handleOpenEdit(m)}
+                  >
+                    <td style={{ padding: '14px 20px', fontWeight: 600, color: '#0f172a' }}>
+                      {m.code}
+                    </td>
+                    <td style={{ padding: '14px 20px', color: '#475569' }}>
+                      {m.sap_co_order || '-'}
+                    </td>
+                    <td style={{ padding: '14px 20px', color: '#334155' }}>
+                      {m.name}
+                    </td>
+                    <td style={{ padding: '14px 20px', color: '#475569' }}>
+                      {m.sap_cost_center || '-'}
+                    </td>
+                    <td style={{ padding: '14px 20px', color: '#334155', fontWeight: m.last_zaprafka_end ? 500 : 400 }}>
+                      {zapDate}
+                    </td>
+                    <td style={{ padding: '14px 20px', color: '#475569' }}>
+                      {intervalYears} лет
+                    </td>
+                    <td style={{ padding: '14px 20px' }}>
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '3px 10px',
+                        borderRadius: '12px',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        backgroundColor: isZaprafka ? '#fef3c7' : m.status === 'ACTIVE' ? '#dcfce7' : m.status === 'MAINTENANCE' ? '#fee2e2' : '#f1f5f9',
+                        color: isZaprafka ? '#b45309' : m.status === 'ACTIVE' ? '#15803d' : m.status === 'MAINTENANCE' ? '#dc2626' : '#475569'
+                      }}>
+                        {m.status === 'ZAPRAFKA' ? 'ЗАПРАВКА' : m.status || 'ACTIVE'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '14px 20px', textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
+                      <div style={{ display: 'inline-flex', gap: '8px' }}>
+                        <button
+                          onClick={() => handleOpenEdit(m)}
+                          title="Настроить / Изменить"
+                          style={{
+                            backgroundColor: '#f1f5f9',
+                            color: '#0f172a',
+                            border: '1px solid #cbd5e1',
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s'
+                          }}
+                          onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#e2e8f0'; }}
+                          onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#f1f5f9'; }}
+                        >
+                          Настроить
+                        </button>
+                        <button
+                          onClick={() => handlePrintQR(m.code)}
+                          title="QR Kod"
+                          style={{
+                            backgroundColor: '#f1f5f9',
+                            color: '#0f172a',
+                            border: '1px solid #cbd5e1',
+                            padding: '6px 10px',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s'
+                          }}
+                          onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#e2e8f0'; }}
+                          onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#f1f5f9'; }}
+                        >
+                          QR
+                        </button>
+                        <button
+                          onClick={() => handleDelete(m.id, m.code)}
+                          title="Удалить"
+                          style={{
+                            backgroundColor: '#fff1f2',
+                            color: '#e11d48',
+                            border: '1px solid #fecdd3',
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s'
+                          }}
+                          onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#ffe4e6'; }}
+                          onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#fff1f2'; }}
+                        >
+                          Удалить
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -397,7 +438,7 @@ export default function Machines() {
             backgroundColor: '#ffffff',
             borderRadius: '16px',
             width: '100%',
-            maxWidth: '560px',
+            maxWidth: '580px',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
             overflow: 'hidden',
             display: 'flex',
@@ -413,7 +454,7 @@ export default function Machines() {
               borderBottom: '1px solid #e2e8f0'
             }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>
-                {editingMachine ? "Stanokni tahrirlash" : "Yangi stanok yaratish"}
+                {editingMachine ? `Настройка станка: ${editingMachine.code}` : "Новый станок"}
               </h3>
               <button
                 onClick={handleCloseModal}
@@ -452,12 +493,12 @@ export default function Machines() {
               {/* Code input */}
               <div style={{ marginBottom: '16px' }}>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
-                  KODI (Takrorlanmas / Unikal) <span style={{ color: '#ef4444' }}>*</span>
+                  КОД СТАНКА (Уникальный) <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Masalan: T-01, T-36"
+                  placeholder="Например: T-01, T-36"
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                   style={{
@@ -475,12 +516,12 @@ export default function Machines() {
               {/* Name input */}
               <div style={{ marginBottom: '16px' }}>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
-                  NOMI / Qisqacha tavsif <span style={{ color: '#ef4444' }}>*</span>
+                  КРАТКИЙ ТЕКСТ / НАЗВАНИЕ <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Masalan: Ремонт станка T-36 (CRX-82 / G-8427.001)"
+                  placeholder="Например: Ремонт станка T-01 (CRX-82 / G-7887.001)"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   style={{
@@ -499,11 +540,11 @@ export default function Machines() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
-                    SO ZAKAZ
+                    СО ЗАКАЗ
                   </label>
                   <input
                     type="text"
-                    placeholder="Masalan: 90001"
+                    placeholder="Например: 90001"
                     value={formData.sap_co_order}
                     onChange={(e) => setFormData({ ...formData, sap_co_order: e.target.value })}
                     style={{
@@ -519,11 +560,11 @@ export default function Machines() {
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
-                    JAVOBGAR MBZ
+                    ОТВЕТСТВЕННОЕ МВЗ
                   </label>
                   <input
                     type="text"
-                    placeholder="Masalan: CARP110303"
+                    placeholder="Например: CARP110303"
                     value={formData.sap_cost_center}
                     onChange={(e) => setFormData({ ...formData, sap_cost_center: e.target.value })}
                     style={{
@@ -539,11 +580,69 @@ export default function Machines() {
                 </div>
               </div>
 
+              {/* ZAPRAFKA SETTINGS BLOCK (User specific request) */}
+              <div style={{ 
+                backgroundColor: '#f8fafc', 
+                border: '1px solid #e2e8f0', 
+                borderRadius: '10px', 
+                padding: '14px 16px', 
+                marginBottom: '16px' 
+              }}>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#714B67', marginBottom: '12px' }}>
+                  Параметры заправки основы
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
+                      Дата последней заправки
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.last_zaprafka_end}
+                      onChange={(e) => setFormData({ ...formData, last_zaprafka_end: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '9px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '13px',
+                        outline: 'none',
+                        backgroundColor: '#ffffff',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
+                      Интервал заправки (каждые N лет)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={formData.zaprafka_interval_years}
+                      onChange={(e) => setFormData({ ...formData, zaprafka_interval_years: parseInt(e.target.value) || 5 })}
+                      style={{
+                        width: '100%',
+                        padding: '9px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '13px',
+                        outline: 'none',
+                        backgroundColor: '#ffffff',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Two columns: Status & Location */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
-                    STATUS
+                    СТАТУС СТАНКА
                   </label>
                   <select
                     value={formData.status}
@@ -559,18 +658,19 @@ export default function Machines() {
                       boxSizing: 'border-box'
                     }}
                   >
-                    <option value="ACTIVE">ACTIVE (Ish holatida)</option>
-                    <option value="MAINTENANCE">MAINTENANCE (Ta'mirda)</option>
-                    <option value="INACTIVE">INACTIVE (Nofaol)</option>
+                    <option value="ACTIVE">ACTIVE (В работе)</option>
+                    <option value="ZAPRAFKA">ZAPRAFKA (Идет заправка)</option>
+                    <option value="MAINTENANCE">MAINTENANCE (На ремонте)</option>
+                    <option value="INACTIVE">INACTIVE (Не активен)</option>
                   </select>
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
-                    JOYlashuv (Sex / Joy)
+                    РАСПОЛОЖЕНИЕ (Цех)
                   </label>
                   <input
                     type="text"
-                    placeholder="Masalan: Цех 1, 3-qator"
+                    placeholder="Например: Цех 1, Ряд 3"
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     style={{
@@ -602,13 +702,13 @@ export default function Machines() {
                     cursor: 'pointer'
                   }}
                 >
-                  Bekor qilish
+                  Отмена
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
                   style={{
-                    backgroundColor: '#2563eb',
+                    backgroundColor: '#714B67',
                     color: '#ffffff',
                     border: 'none',
                     padding: '10px 24px',
@@ -616,11 +716,11 @@ export default function Machines() {
                     fontSize: '14px',
                     fontWeight: 600,
                     cursor: submitting ? 'not-allowed' : 'pointer',
-                    boxShadow: '0 2px 4px rgba(37, 99, 235, 0.3)',
+                    boxShadow: '0 2px 4px rgba(113, 75, 103, 0.3)',
                     opacity: submitting ? 0.7 : 1
                   }}
                 >
-                  {submitting ? 'Saqlanmoqda...' : 'Saqlash'}
+                  {submitting ? 'Сохранение...' : 'Сохранить'}
                 </button>
               </div>
             </form>
