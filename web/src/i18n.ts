@@ -6,16 +6,15 @@ const resources = {
   ru: {
     translation: {
       ...localesRu,
-      "appTitle": "🧵 Ремонт станков",
+      "appTitle": "Ремонт станков",
       "sidebar": {
-        "dashboard": "📊 Дашборд",
-        "machines": "⚙️ Станки",
-        "repairs": "🛠 Ремонты и расходы",
-        "plans": "📅 Планы и заправка",
-        "templates": "📋 Шаблоны",
-        "users": "👤 Пользователи",
-        "audit": "🧾 Журнал действий",
-        "reports": "⬇️ Отчёты (Excel)"
+        "dashboard": "Дашборд",
+        "machines": "Станки",
+        "repairs": "Ремонты и расходы",
+        "plans": "Планы и заправка",
+        "users": "Пользователи",
+        "audit": "Журнал действий",
+        "reports": "Отчёты (Excel)"
       }
     }
   }

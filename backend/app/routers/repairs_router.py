@@ -85,3 +85,14 @@ async def get_repair(repair_id: uuid.UUID, db: AsyncSession = Depends(get_db), c
     if current_user.role == "ADMIN":
         return RepairOutAdmin.model_validate(loaded)
     return RepairOutUser.model_validate(loaded)
+
+@router.delete("/{repair_id}")
+async def delete_repair(repair_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    res = await db.execute(select(Repair).where(Repair.id == repair_id))
+    repair = res.scalars().first()
+    if not repair:
+        raise HTTPException(status_code=404, detail="Not found")
+    await db.delete(repair)
+    await db.commit()
+    return {"status": "success", "message": "Repair deleted"}
+

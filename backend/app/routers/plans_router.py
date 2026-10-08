@@ -89,3 +89,14 @@ async def complete_plan(
     await db.commit()
     await db.refresh(plan)
     return plan
+
+@router.delete("/{plan_id}")
+async def delete_plan(plan_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    res = await db.execute(select(Plan).where(Plan.id == plan_id))
+    plan = res.scalars().first()
+    if not plan:
+        raise HTTPException(status_code=404, detail="Not found")
+    await db.delete(plan)
+    await db.commit()
+    return {"status": "success", "message": "Plan deleted"}
+
